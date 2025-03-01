@@ -1,3 +1,5 @@
+mod storage;
+
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
 use log::LevelFilter;
