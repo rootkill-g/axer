@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-struct FunctionRunner {
-    module_index: i32,
-    function_name: String,
-    args: Vec<String>,
+pub struct WasmModule {
+    pub id: String,
+    pub module_name: String,
+    pub mime_type: String,
+    pub bin_data: Vec<u8>,
 }

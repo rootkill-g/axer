@@ -1,5 +1,5 @@
+mod database;
 mod dtos;
-mod storage;
 
 use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
 
