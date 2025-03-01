@@ -2,7 +2,6 @@ mod storage;
 
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
-use log::LevelFilter;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -31,9 +30,13 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::Builder::from_default_env()
-        .filter_level(LevelFilter::Info)
+    // Initialize tracing subscriber for logging
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::INFO)
         .init();
+
+    tracing::info!("Initializing database...");
+
     HttpServer::new(|| App::new().wrap(Logger::default()).service(index))
         .bind(("127.0.0.1", 8080))?
         .run()
