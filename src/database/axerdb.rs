@@ -49,3 +49,19 @@ impl AxerDB {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_init_axer_db() {
+        let axerdb_conn = AxerDB::initialize_axerdb();
+        let mut row = axerdb_conn
+            .0
+            .prepare("SELECT id, module_name, mime_type, bin_data FROM wasm_modules")
+            .expect("Failed to get rows from table");
+
+        assert_eq!(row.execute(()), Ok(0));
+    }
+}
