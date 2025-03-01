@@ -1,6 +1,5 @@
 mod storage;
 
-use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 
@@ -9,11 +8,6 @@ struct Addition {
     func: String,
     x: i32,
     y: i32,
-}
-
-#[derive(MultipartForm, Debug)]
-struct WasmModule {
-    module: TempFile,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
