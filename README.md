@@ -17,7 +17,9 @@ It utilizes WebAssembly System Interface (WASI) APIs which provide a secure stan
 
 **Axer 🪓** provides APIs for registering wasm modules which are compiled for WASI, so make sure you embed WASI interface **(NOT JS or Web interface)**.
 
-- [X] **POST** */wasm* JSON Payload *{ "name": "module_name", "wasm": [wasm module as a byte-array] }* - Returns module registration ID and name
-- [] **GET** */wasm* JSON Payload *{ "name": "module_name" }* - Returns exported functions by module and the parameters it takes
-- []- **PATCH** */wasm* JSON Payload *{ "name": "module_name", "wasm": [updated wasm module to replace existing module] }* - Returns `Ok`
-- []- **POST** */wasm/:id* JSON Payload *{ "name": "module_name", "function_name": "name of function exported by module", "function_parameters": "parameters that the function expects" }* - Returns the value after processing the function with passed parameters
+- [X] Register Wasm module
+- [ ] Get wasm module exported functions and parameter list
+- [ ] Execute wasm function
+- [ ] Update wasm module
+- [ ] Delete a wasm module
+- [ ] ...
