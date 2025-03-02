@@ -2,7 +2,7 @@ use sqlx::{self, Result as AxerDBResult, SqlitePool};
 
 use crate::dtos::{WasmModule, WasmModuleResponse};
 
-pub struct AxerDBPool(SqlitePool);
+pub struct AxerDBPool(pub(crate) SqlitePool);
 
 impl AxerDBPool {
     pub async fn new() -> AxerDBPool {
@@ -53,13 +53,15 @@ impl AxerDBPool {
 
 #[cfg(test)]
 mod tests {
+    use crate::test_utils::init_axerdb_test_pool;
+
     use super::*;
     use sqlx::Row;
     use ulid::Ulid;
 
     #[tokio::test]
     async fn test_init_axer_db() {
-        let cpool = AxerDBPool::new().await;
+        let cpool = init_axerdb_test_pool().await;
         let query = "SELECT COUNT(*) FROM wasm_modules";
 
         let res = sqlx::query(query).fetch_one(&cpool.0).await.unwrap();
@@ -69,7 +71,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_write() {
-        let cpool = AxerDBPool::new().await;
+        let cpool = init_axerdb_test_pool().await;
         let wat_bytes =
             b"(module (func (export \"test\") (param i32) (result i32) local.get 0))".to_vec();
         let wasm_module = WasmModule {
@@ -83,7 +85,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_write_and_read() {
-        let cpool = AxerDBPool::new().await;
+        let cpool = init_axerdb_test_pool().await;
         let wat_bytes =
             b"(module (func (export \"test\") (param i32) (result i32) local.get 0))".to_vec();
         let module_id = Ulid::new().to_string();
