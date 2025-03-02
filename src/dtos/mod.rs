@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, FromRow)]
 pub struct WasmModule {
     pub id: String,
-    pub module_name: String,
-    pub mime_type: String,
-    pub bin_data: Vec<u8>,
+    pub name: String,
+    pub wasm: Vec<u8>,
 }
