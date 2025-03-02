@@ -1,7 +1,7 @@
 mod database;
 mod dtos;
 
-use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 
 #[get("/")]
 async fn index() -> impl Responder {
@@ -16,9 +16,16 @@ async fn main() -> std::io::Result<()> {
         .init();
 
     tracing::info!("Initializing database...");
+    let cpool = database::axerdb::AxerDBPool::new().await;
+    let axerdb = web::Data::new(cpool);
 
-    HttpServer::new(|| App::new().wrap(Logger::default()).service(index))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::clone(&axerdb))
+            .wrap(Logger::default())
+            .service(index)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
