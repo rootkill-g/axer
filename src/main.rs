@@ -1,6 +1,8 @@
 mod database;
 mod dtos;
 mod routes;
+#[cfg(test)]
+mod test_utils;
 
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use routes::{register_wasm_module, root};
