@@ -1,6 +1,6 @@
 use sqlx::{self, Result as AxerDBResult, SqlitePool};
 
-use crate::dtos::WasmModule;
+use crate::dtos::{WasmModule, WasmModuleResponse};
 
 pub struct AxerDBPool(SqlitePool);
 
@@ -13,27 +13,31 @@ impl AxerDBPool {
         AxerDBPool(cpool)
     }
 
-    pub async fn write(&self, wasm_module: WasmModule) -> AxerDBResult<String> {
-        match sqlx::query(
+    pub async fn write(&self, wasm_module: WasmModule) -> AxerDBResult<WasmModuleResponse> {
+        match sqlx::query_as::<_, WasmModuleResponse>(
             "
             INSERT INTO wasm_modules (id, name, wasm)
             VALUES (?, ?, ?)
-            RETURNING name
+            RETURNING id, name
         ",
         )
         .bind(wasm_module.id)
         .bind(wasm_module.name.clone())
         .bind(wasm_module.wasm)
-        .execute(&self.0)
+        .fetch_one(&self.0)
         .await
         {
-            Ok(_) => Ok(wasm_module.name),
+            Ok(query_result) => {
+                let response = query_result.into();
+
+                Ok(response)
+            }
             Err(err) => Err(err),
         }
     }
 
     pub async fn read(&self, module_id: String) -> AxerDBResult<WasmModule> {
-        Ok(sqlx::query_as(
+        Ok(sqlx::query_as::<_, WasmModule>(
             "
             SELECT id, name, wasm
             FROM wasm_modules
