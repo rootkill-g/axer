@@ -1,4 +1,4 @@
-use rusqlite::{params, Connection, Error as AxerDBError, Result as AxerDBResult};
+use rusqlite::{params, Connection, Result as AxerDBResult};
 use ulid::Ulid;
 
 use crate::dtos::WasmModule;
@@ -6,7 +6,7 @@ use crate::dtos::WasmModule;
 pub struct AxerDB(Connection);
 
 impl AxerDB {
-    pub fn initialize_axerdb() -> Self {
+    pub fn new() -> Self {
         let mut conn = Connection::open("axer.db")
             .expect("FATAL: Error occured while initializing database! ABORTING");
 
@@ -56,12 +56,27 @@ mod tests {
 
     #[test]
     fn test_init_axer_db() {
-        let axerdb_conn = AxerDB::initialize_axerdb();
-        let mut row = axerdb_conn
+        let axerdb = AxerDB::new();
+        let mut row = axerdb
             .0
             .prepare("SELECT id, module_name, mime_type, bin_data FROM wasm_modules")
             .expect("Failed to get rows from table");
 
         assert_eq!(row.execute(()), Ok(0));
+    }
+
+    #[test]
+    fn test_write() {
+        let axerdb = AxerDB::new();
+        let wat_bytes =
+            b"(module (func (export \"test\") (param i32) (result i32) local.get 0))".to_vec();
+        let wasm_module = WasmModule {
+            id: Ulid::new().to_string(),
+            module_name: String::from("test_module"),
+            mime_type: String::from("wasm"),
+            bin_data: wat_bytes,
+        };
+
+        assert_eq!(axerdb.write(wasm_module), Ok(()));
     }
 }
