@@ -79,4 +79,22 @@ mod tests {
 
         assert_eq!(axerdb.write(wasm_module), Ok(()));
     }
+
+    #[test]
+    fn test_write_and_read() {
+        let axerdb = AxerDB::new();
+        let wat_bytes =
+            b"(module (func (export \"test\") (param i32) (result i32) local.get 0))".to_vec();
+        let module_id = Ulid::new().to_string();
+        let wasm_module = WasmModule {
+            id: module_id,
+            module_name: String::from("test_module"),
+            mime_type: String::from("wasm"),
+            bin_data: wat_bytes,
+        };
+
+        assert_eq!(axerdb.write(wasm_module), Ok(()));
+
+        assert_eq!(axerdb.read(module_id), Ok(wasm_module));
+    }
 }
