@@ -3,7 +3,7 @@ mod dtos;
 mod routes;
 
 use actix_web::{middleware::Logger, web, App, HttpServer};
-use routes::root;
+use routes::{register_wasm_module, root};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -21,6 +21,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::clone(&axerdb))
             .wrap(Logger::default())
             .service(root)
+            .service(register_wasm_module)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
