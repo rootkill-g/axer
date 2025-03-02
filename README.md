@@ -1,6 +1,7 @@
 # Axer 🪓
 
-> **_NOTE:_** This is under active development and the APIs may change
+> [!WARNING]
+> This is under active development and the APIs may change
 
 **Function as a Service.**
 
