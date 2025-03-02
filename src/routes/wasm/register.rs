@@ -32,6 +32,8 @@ pub async fn register_wasm_module(
 
 #[cfg(test)]
 mod tests {
+    use crate::test_utils::init_axerdb_test_pool;
+
     use super::*;
     use actix_web::{
         http::{header::ContentType, StatusCode},
@@ -41,7 +43,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_route_register_wasm_module() {
-        let axerdb = web::Data::new(AxerDBPool::new().await);
+        let axerdb = web::Data::new(init_axerdb_test_pool().await);
         let app = test::init_service(
             App::new()
                 .app_data(web::Data::clone(&axerdb))
@@ -54,13 +56,11 @@ mod tests {
                 .to_vec(),
         };
         let payload = json!(&wasm_module_register_request);
-        println!("Payload: {:?}", payload);
         let req = test::TestRequest::post()
             .uri("/wasm")
             .insert_header(ContentType::json())
             .set_json(&payload)
             .to_request();
-        println!("Test Request: {:?}", req);
         let res = test::call_service(&app, req).await;
 
         assert_eq!(res.status(), StatusCode::CREATED)
